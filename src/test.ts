@@ -4,8 +4,14 @@ import 'zone.js/dist/zone-testing';
 import { getTestBed } from '@angular/core/testing';
 import {
   BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting
+  platformBrowserDynamicTesting,
 } from '@angular/platform-browser-dynamic/testing';
+import {
+  addMatchers,
+  initTestScheduler,
+  getTestScheduler,
+  resetTestScheduler,
+} from 'jasmine-marbles';
 
 declare const require: any;
 
@@ -18,3 +24,11 @@ getTestBed().initTestEnvironment(
 const context = require.context('./', true, /\.spec\.ts$/);
 // And load the modules.
 context.keys().map(context);
+
+// https://github.com/synapse-wireless-labs/jasmine-marbles/issues/37
+jasmine.getEnv().beforeAll(() => addMatchers());
+jasmine.getEnv().beforeEach(() => initTestScheduler());
+jasmine.getEnv().afterEach(() => {
+  getTestScheduler().flush();
+  resetTestScheduler();
+});
